@@ -41,14 +41,19 @@
         <a href="#about" class="btn-ghost">Our Story</a>
       </div>
     </div>
-    <div class="hero-badge">Free shipping<br/>on all items</div>
+    <div class="hero-badge">Free shipping<br/>over $50</div>
   </section>
+
+  <!-- SHIPPING BANNER -->
+  <div class="shipping-banner">
+    📦 $6 flat rate shipping · <strong>Free shipping on orders over $50</strong> · Ships in 1–5 days
+  </div>
 
   <!-- PRODUCTS -->
   <section class="products" id="products">
     <div class="section-header">
       <h2>Our Collection</h2>
-      <a href="#" class="see-all">10 items</a>
+      <span class="see-all">10 items</span>
     </div>
     <div class="product-grid" id="product-grid"></div>
   </section>
@@ -105,7 +110,7 @@
           <span class="pay-icon">💳 Card</span>
           <span class="pay-icon">🅿️ PayPal</span>
           <span class="pay-icon">G Pay</span>
-          <span class="pay-icon">Revolut</span>
+          <span class="pay-icon">💜 Revolut</span>
         </div>
       </div>
     </div>
@@ -114,25 +119,7 @@
     </div>
   </footer>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast">Added to cart!</div>
-
-  <!-- PRODUCT MODAL -->
-  <div class="modal-overlay" id="product-modal" onclick="closeProduct()" style="display:none">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <button class="modal-close" onclick="closeProduct()">✕</button>
-      <div class="pm-emoji" id="pm-emoji">🪵</div>
-      <h2 class="pm-name" id="pm-name"></h2>
-      <p class="pm-desc" id="pm-desc"></p>
-      <div class="pm-footer">
-        <div>
-          <div class="pm-price" id="pm-price"></div>
-          <div class="pm-ship" id="pm-ship"></div>
-        </div>
-        <button class="btn-primary" id="pm-add">Add to Cart</button>
-      </div>
-    </div>
-  </div>
+  <div class="toast" id="toast"></div>
 
   <!-- CART MODAL -->
   <div class="modal-overlay" id="cart-modal" onclick="closeCart()" style="display:none">
@@ -140,7 +127,8 @@
       <button class="modal-close" onclick="closeCart()">✕</button>
       <h2 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:20px;color:#2C2318;">Your Cart</h2>
       <div id="cart-body"></div>
-      <button class="btn-primary" style="width:100%;margin-top:20px;text-align:center;" onclick="goToCheckout()">Proceed to Checkout →</button>
+      <div id="cart-totals" style="margin-top:16px;"></div>
+      <button class="btn-primary" style="width:100%;margin-top:16px;text-align:center;" onclick="goToCheckout()">Proceed to Checkout →</button>
     </div>
   </div>
 
@@ -150,30 +138,25 @@
       <button class="modal-close" onclick="closeCheckout()">✕</button>
       <h2 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px;color:#2C2318;">Secure Checkout</h2>
       <p style="font-size:13px;color:#9E9383;margin-bottom:20px;">Powered by Stripe — encrypted & secure</p>
-
       <div class="checkout-payment-methods">
         <button class="pay-method active" onclick="selectPayment(this,'card')">💳 Card</button>
         <button class="pay-method" onclick="selectPayment(this,'paypal')">🅿️ PayPal</button>
         <button class="pay-method" onclick="selectPayment(this,'gpay')">G Pay</button>
         <button class="pay-method" onclick="selectPayment(this,'revolut')">💜 Revolut</button>
       </div>
-
       <div id="card-section">
         <div id="stripe-card-element" class="stripe-input"></div>
         <p id="stripe-error" style="color:#c0392b;font-size:13px;margin-top:8px;display:none;"></p>
       </div>
-
-      <div style="background:#F5EFE0;border-radius:10px;padding:16px;margin:16px 0;" id="checkout-summary-box">
-        <div style="font-size:13px;color:#6B5B45;margin-bottom:8px;">Order total</div>
+      <div style="background:#F5EFE0;border-radius:10px;padding:16px;margin:16px 0;">
+        <div style="font-size:13px;color:#6B5B45;margin-bottom:4px;">Order total</div>
         <div style="font-size:24px;font-weight:500;color:#6B5032;" id="checkout-total">$0.00</div>
       </div>
-
       <div style="margin-bottom:14px;">
         <input class="checkout-input" type="email" placeholder="Email address" id="checkout-email" />
         <input class="checkout-input" type="text" placeholder="Full name" id="checkout-name" />
         <input class="checkout-input" type="text" placeholder="Shipping address" id="checkout-address" />
       </div>
-
       <button class="btn-primary" style="width:100%;text-align:center;font-size:16px;padding:16px;" onclick="submitPayment()">
         Pay Now — <span id="pay-total">$0.00</span>
       </button>
@@ -183,8 +166,6 @@
 
   <script src="js/main.js"></script>
   <script>
-    // ─── STRIPE SETUP ───────────────────────────────────────────────
-    // Replace with your real Stripe Publishable Key:
     const STRIPE_PK = 'pk_test_REPLACE_WITH_YOUR_KEY';
     let stripe, cardElement;
 
@@ -192,33 +173,15 @@
       stripe = Stripe(STRIPE_PK);
       const elements = stripe.elements();
       cardElement = elements.create('card', {
-        style: {
-          base: {
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: '16px',
-            color: '#3D3020',
-            '::placeholder': { color: '#9E9383' }
-          }
-        }
+        style: { base: { fontFamily: "'DM Sans', sans-serif", fontSize: '16px', color: '#3D3020', '::placeholder': { color: '#9E9383' } } }
       });
       cardElement.mount('#stripe-card-element');
-      cardElement.on('change', e => {
-        const err = document.getElementById('stripe-error');
-        err.style.display = e.error ? 'block' : 'none';
-        err.textContent = e.error ? e.error.message : '';
-      });
-    }
-
-    function selectPayment(btn, method) {
-      document.querySelectorAll('.pay-method').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('card-section').style.display = method === 'card' ? 'block' : 'none';
     }
 
     function goToCheckout() {
       if (cart.length === 0) { showToast('Your cart is empty!'); return; }
       closeCart();
-      const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+      const total = getTotal();
       document.getElementById('checkout-total').textContent = '$' + total.toFixed(2);
       document.getElementById('pay-total').textContent = '$' + total.toFixed(2);
       document.getElementById('checkout-modal').style.display = 'flex';
@@ -230,20 +193,10 @@
       const name = document.getElementById('checkout-name').value;
       const address = document.getElementById('checkout-address').value;
       if (!email || !name || !address) { showToast('Please fill in all fields.'); return; }
-
-      // In production: call your backend to create a PaymentIntent and get client_secret
-      // Then: stripe.confirmCardPayment(clientSecret, { payment_method: { card: cardElement } })
-      // For now, show success demo:
       showToast('Order placed! Thank you 🎉');
-      cart = [];
-      updateCartBadge();
+      cart = []; saveCart(); updateCartBadge();
       setTimeout(closeCheckout, 500);
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Sync pay-total on open
-      const orig = window.goToCheckout;
-    });
   </script>
 </body>
 </html>
