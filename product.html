@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <script src="https://js.stripe.com/v3/"></script>
+  
   <link rel="stylesheet" href="css/style.css" />
   <style>
     .product-page { padding: 120px 5% 80px; max-width: 1100px; margin: 0 auto; }
@@ -182,6 +182,16 @@
     let stripe, cardElement, qty = 1;
 
     function initStripe() {
+      if (!window.Stripe) {
+        const s = document.createElement('script');
+        s.src = 'https://js.stripe.com/v3/';
+        s.onload = () => mountStripe();
+        document.head.appendChild(s);
+        return;
+      }
+      mountStripe();
+    }
+    function mountStripe() {
       stripe = Stripe(STRIPE_PK);
       const elements = stripe.elements();
       cardElement = elements.create('card', {
