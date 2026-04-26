@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CraftEarth — Handcrafted for Real Homes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://js.stripe.com/v3/"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="#" class="nav-logo">CraftEarth</a>
+    <ul class="nav-links">
+      <li><a href="#products">Shop</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <button class="cart-btn" onclick="openCart()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+      </button>
+      <a href="#products" class="btn-nav">Shop Now</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-texture"></div>
+    <div class="hero-content">
+      <span class="hero-tag">Handcrafted · Natural · Beautiful</span>
+      <h1 class="hero-title">Bring Raw Beauty<br /><em>Into Your Home</em></h1>
+      <p class="hero-sub">Curated home decor &amp; artisan pieces — for those who want their space to tell a story.</p>
+      <div class="hero-cta">
+        <a href="#products" class="btn-primary">Explore the Shop</a>
+        <a href="#about" class="btn-ghost">Our Story</a>
+      </div>
+    </div>
+    <div class="hero-badge">Free shipping<br/>on all items</div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="products" id="products">
+    <div class="section-header">
+      <h2>Our Collection</h2>
+      <a href="#" class="see-all">10 items</a>
+    </div>
+    <div class="product-grid" id="product-grid"></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about-banner" id="about">
+    <div class="about-text">
+      <span class="hero-tag">Our Story</span>
+      <h2>Made by hands.<br /><em>Inspired by nature.</em></h2>
+      <p>CraftEarth started with a passion for DIY — transforming raw concrete, wood, and earth into beautiful, lasting pieces. Every product we carry is hand-picked for quality and creativity.</p>
+      <a href="#products" class="btn-primary">Shop the Collection</a>
+    </div>
+    <div class="about-visual">
+      <div class="about-card"><div class="about-stat">32k+</div><div class="about-stat-label">Happy followers</div></div>
+      <div class="about-card"><div class="about-stat">88k</div><div class="about-stat-label">Monthly visitors</div></div>
+      <div class="about-card"><div class="about-stat">4.9★</div><div class="about-stat-label">Avg. rating</div></div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter" id="contact">
+    <h2>Get 10% off your first order</h2>
+    <p>Join our community of makers and get exclusive deals &amp; DIY inspiration.</p>
+    <form class="newsletter-form" onsubmit="handleSubscribe(event)">
+      <input type="email" placeholder="your@email.com" required />
+      <button type="submit" class="btn-primary">Subscribe</button>
+    </form>
+    <p class="fine-print">No spam. Unsubscribe anytime.</p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="nav-logo" style="display:block;margin-bottom:10px;color:#E8DFC8;">CraftEarth</span>
+        <p>Handcrafted goods for real homes.<br />Shipped worldwide.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Shop</h4>
+        <a href="#products">All Products</a>
+        <a href="#about">Our Story</a>
+        <a href="#contact">Newsletter</a>
+      </div>
+      <div class="footer-links">
+        <h4>Info</h4>
+        <a href="#">Shipping Policy</a>
+        <a href="#">Returns</a>
+        <a href="#">FAQ</a>
+        <a href="#">Contact Us</a>
+      </div>
+      <div class="footer-links">
+        <h4>We Accept</h4>
+        <div class="payment-icons">
+          <span class="pay-icon">💳 Card</span>
+          <span class="pay-icon">🅿️ PayPal</span>
+          <span class="pay-icon">G Pay</span>
+          <span class="pay-icon">Revolut</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 CraftEarth. All rights reserved. · Secure payments by Stripe</p>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">Added to cart!</div>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal-overlay" id="product-modal" onclick="closeProduct()" style="display:none">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeProduct()">✕</button>
+      <div class="pm-emoji" id="pm-emoji">🪵</div>
+      <h2 class="pm-name" id="pm-name"></h2>
+      <p class="pm-desc" id="pm-desc"></p>
+      <div class="pm-footer">
+        <div>
+          <div class="pm-price" id="pm-price"></div>
+          <div class="pm-ship" id="pm-ship"></div>
+        </div>
+        <button class="btn-primary" id="pm-add">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART MODAL -->
+  <div class="modal-overlay" id="cart-modal" onclick="closeCart()" style="display:none">
+    <div class="modal-box cart-modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeCart()">✕</button>
+      <h2 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:20px;color:#2C2318;">Your Cart</h2>
+      <div id="cart-body"></div>
+      <button class="btn-primary" style="width:100%;margin-top:20px;text-align:center;" onclick="goToCheckout()">Proceed to Checkout →</button>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div class="modal-overlay" id="checkout-modal" onclick="closeCheckout()" style="display:none">
+    <div class="modal-box checkout-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeCheckout()">✕</button>
+      <h2 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px;color:#2C2318;">Secure Checkout</h2>
+      <p style="font-size:13px;color:#9E9383;margin-bottom:20px;">Powered by Stripe — encrypted & secure</p>
+
+      <div class="checkout-payment-methods">
+        <button class="pay-method active" onclick="selectPayment(this,'card')">💳 Card</button>
+        <button class="pay-method" onclick="selectPayment(this,'paypal')">🅿️ PayPal</button>
+        <button class="pay-method" onclick="selectPayment(this,'gpay')">G Pay</button>
+        <button class="pay-method" onclick="selectPayment(this,'revolut')">💜 Revolut</button>
+      </div>
+
+      <div id="card-section">
+        <div id="stripe-card-element" class="stripe-input"></div>
+        <p id="stripe-error" style="color:#c0392b;font-size:13px;margin-top:8px;display:none;"></p>
+      </div>
+
+      <div style="background:#F5EFE0;border-radius:10px;padding:16px;margin:16px 0;" id="checkout-summary-box">
+        <div style="font-size:13px;color:#6B5B45;margin-bottom:8px;">Order total</div>
+        <div style="font-size:24px;font-weight:500;color:#6B5032;" id="checkout-total">$0.00</div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <input class="checkout-input" type="email" placeholder="Email address" id="checkout-email" />
+        <input class="checkout-input" type="text" placeholder="Full name" id="checkout-name" />
+        <input class="checkout-input" type="text" placeholder="Shipping address" id="checkout-address" />
+      </div>
+
+      <button class="btn-primary" style="width:100%;text-align:center;font-size:16px;padding:16px;" onclick="submitPayment()">
+        Pay Now — <span id="pay-total">$0.00</span>
+      </button>
+      <p style="text-align:center;font-size:12px;color:#9E9383;margin-top:12px;">🔒 256-bit SSL encryption. Your data is safe.</p>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // ─── STRIPE SETUP ───────────────────────────────────────────────
+    // Replace with your real Stripe Publishable Key:
+    const STRIPE_PK = 'pk_test_REPLACE_WITH_YOUR_KEY';
+    let stripe, cardElement;
+
+    function initStripe() {
+      stripe = Stripe(STRIPE_PK);
+      const elements = stripe.elements();
+      cardElement = elements.create('card', {
+        style: {
+          base: {
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: '16px',
+            color: '#3D3020',
+            '::placeholder': { color: '#9E9383' }
+          }
+        }
+      });
+      cardElement.mount('#stripe-card-element');
+      cardElement.on('change', e => {
+        const err = document.getElementById('stripe-error');
+        err.style.display = e.error ? 'block' : 'none';
+        err.textContent = e.error ? e.error.message : '';
+      });
+    }
+
+    function selectPayment(btn, method) {
+      document.querySelectorAll('.pay-method').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('card-section').style.display = method === 'card' ? 'block' : 'none';
+    }
+
+    function goToCheckout() {
+      if (cart.length === 0) { showToast('Your cart is empty!'); return; }
+      closeCart();
+      const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+      document.getElementById('checkout-total').textContent = '$' + total.toFixed(2);
+      document.getElementById('pay-total').textContent = '$' + total.toFixed(2);
+      document.getElementById('checkout-modal').style.display = 'flex';
+      if (!stripe) initStripe();
+    }
+
+    async function submitPayment() {
+      const email = document.getElementById('checkout-email').value;
+      const name = document.getElementById('checkout-name').value;
+      const address = document.getElementById('checkout-address').value;
+      if (!email || !name || !address) { showToast('Please fill in all fields.'); return; }
+
+      // In production: call your backend to create a PaymentIntent and get client_secret
+      // Then: stripe.confirmCardPayment(clientSecret, { payment_method: { card: cardElement } })
+      // For now, show success demo:
+      showToast('Order placed! Thank you 🎉');
+      cart = [];
+      updateCartBadge();
+      setTimeout(closeCheckout, 500);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Sync pay-total on open
+      const orig = window.goToCheckout;
+    });
+  </script>
+</body>
+</html>
